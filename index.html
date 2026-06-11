@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -289,25 +290,27 @@ function submitForm() {
   window._userName = nomComplet;
 
   var fields = {
-    "fldfM6HtA2qUviOX5": nomComplet,
-    "fldMX9MmpfHPEENul": e
+    "fldFsDSAwilvsDtUv": nomComplet,
+    "fldTKOrrbJPFF9Yz4": e,
+    "fldhDNjDY1rpd6APh": norm,
+    "fldi6zJxg0rMiOkwc": profile,
+    "fldRm7wS5xZ8w767W": ageLabel,
+    "fldOBzOMoaALnwVd7": "Boussole VivaTech",
+    "fld73WHFGw1wDBFto": new Date().toISOString().split('T')[0]
   };
-  if (tel) fields["fldW7vhc17JKT83IT"] = tel;
+  if (tel) fields["fldrYv0ebIKNQOMpS"] = tel;
 
   var btn = document.querySelector('.submit-btn');
   btn.textContent = 'Envoi en cours…';
   btn.disabled = true;
 
-  fetch("https://api.airtable.com/v0/appRusV4qJw9fxGKF/Contacts", {
+  fetch("https://api.airtable.com/v0/appRusV4qJw9fxGKF/Leads_Boussole", {
     method: "POST",
     headers: {
       "Authorization": "Bearer patj7qgGOEXkqoApG.7b0d8f5f64758a26b447d103a10ea11b141dc32091da28991fe35643f83211c4",
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      fields: fields,
-      typecast: true
-    })
+    body: JSON.stringify({ fields: fields, typecast: true })
   })
   .then(function(res) {
     if (!res.ok) return res.json().then(function(e){ throw e; });
@@ -317,9 +320,7 @@ function submitForm() {
     if (data.id) {
       document.getElementById('mainBody').style.display = 'none';
       document.getElementById('successBox').classList.add('visible');
-    } else {
-      throw data;
-    }
+    } else { throw data; }
   })
   .catch(function(err) {
     console.error('Airtable error:', JSON.stringify(err));
