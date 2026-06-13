@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -218,7 +217,7 @@ var T = {
     ages: ["Moins de 35 ans","35 – 45 ans","Plus de 45 ans"],
     ansYes: "Oui", ansMid: "À peu près", ansNo: "Non",
     ctaQ: "Voulez-vous affiner avec une analyse plus approfondie et un regard médical ?",
-    pdfTeaser: "Après avoir renseigné vos coordonnées, vous pourrez télécharger votre boussole santé en PDF.",
+    pdfTeaser: "Renseignez vos coordonnées pour recevoir votre analyse personnalisée et télécharger votre boussole santé en PDF.",
     phFirst: "Prénom", phLast: "Nom", phTel: "Téléphone (optionnel)",
     consentLbl: "J’accepte que PrévenirCare conserve mes données personnelles (nom, prénom, email, téléphone) pendant 12 mois aux fins de me recontacter dans le cadre d’un bilan de prévention santé.",
     submitBtn: "Oui, je souhaite réaliser le bilan global et échanger avec l’un de vos médecins",
@@ -231,7 +230,7 @@ var T = {
     eSpaceTitle: "D’OÙ VIENT CETTE APPROCHE ?",
     eSpaceText: "Dans l’espace, la santé ne peut pas attendre l’apparition des symptômes. Les astronautes n’attendent pas d’être malades pour protéger leur santé.\n\nIls évoluent dans des environnements où la prévention, l’anticipation et la surveillance continue sont essentielles. La médecine spatiale est préventive par nature.\nPourquoi la population générale ne fait-elle pas de même ?\n\nChez PrévenirCare, nous nous inspirons de cette philosophie. Nous explorons comment les déterminants de santé, les capacités d’adaptation et les facteurs protecteurs interagissent, bien avant que la maladie n’apparaisse. Parce qu’il est plus facile de construire la santé que de la reconstruire.",
     eCta: "Découvrir l’expérience PrévenirCare complète",
-    ePdf: "Télécharger mon bilan santé (PDF)",
+    ePdf: "Télécharger mon analyse et ma boussole santé (PDF)",
     pdfDocTitle: "Boussole santé",
     pdfDocDesc: "Un premier éclairage sur votre santé, pour identifier ce qui la soutient aujourd’hui et ce qui pourrait la fragiliser demain.",
     sendingTxt: "Envoi en cours…",
@@ -248,7 +247,7 @@ var T = {
     ages: ["Under 35","35 – 45","Over 45"],
     ansYes: "Yes", ansMid: "Somewhat", ansNo: "No",
     ctaQ: "Would you like to go deeper with a more comprehensive analysis and a medical perspective?",
-    pdfTeaser: "After filling in your details, you will be able to download your health assessment as a PDF.",
+    pdfTeaser: "Fill in your details to receive your personalised analysis and download your health assessment as a PDF.",
     phFirst: "First name", phLast: "Last name", phTel: "Phone (optional)",
     consentLbl: "I agree that PrévenirCare may retain my personal data (name, email, phone) for 12 months in order to contact me regarding a preventive health assessment.",
     submitBtn: "Yes, I would like to complete the full assessment and speak with one of your physicians",
@@ -261,7 +260,7 @@ var T = {
     eSpaceTitle: "WHERE DOES THIS APPROACH COME FROM?",
     eSpaceText: "In space, health cannot rely on waiting for symptoms to appear.\nAstronauts don’t wait to become ill before protecting their health. Why should we?\nThey operate in environments where prevention, anticipation and continuous monitoring are essential. Space medicine is preventive by nature.\nAt PrévenirCare, we draw inspiration from this philosophy.\nWe explore how health drivers, adaptive capacities and protective factors interact long before disease appears.\nAstronauts prepare their health before it is tested. We believe everyone should have the opportunity to do the same.\nBecause it’s easier to build health than to rebuild it.",
     eCta: "Discover the full PrévenirCare experience",
-    ePdf: "Download my health assessment (PDF)",
+    ePdf: "Download my personalised analysis (PDF)",
     pdfDocTitle: "Health Assessment",
     pdfDocDesc: "A first glimpse of your health — to identify what sustains it today and what could weaken it tomorrow.",
     sendingTxt: "Sending…",
@@ -503,10 +502,10 @@ function generatePDF() {
   var domainRows = qs.map(function(q){
     var raw = answers[q.id];
     var display = raw !== undefined ? ansMap[raw] : "-";
-    var pts = q.inv ? (raw===3?0:raw===1?1:3) : raw;
-    var bg = pts >= 3 ? "#E8F7F2" : pts >= 1 ? "#EEEDF7" : "#FDF0EC";
-    var fc = pts >= 3 ? "#0A6B52" : pts >= 1 ? "#3D3470" : "#7A2E10";
-    var bc = pts >= 3 ? "#69BAA5" : pts >= 1 ? "#8176AA" : "#C45A2C";
+    var pts = raw !== undefined ? (q.inv ? (raw===3?0:raw===1?1:3) : raw) : -1;
+    var bg = pts >= 3 ? "#E8F7F2" : pts >= 1 ? "#EEEDF7" : pts >= 0 ? "#FDF0EC" : "#F5F5F5";
+    var fc = pts >= 3 ? "#0A6B52" : pts >= 1 ? "#3D3470" : pts >= 0 ? "#7A2E10" : "#aaa";
+    var bc = pts >= 3 ? "#69BAA5" : pts >= 1 ? "#8176AA" : pts >= 0 ? "#C45A2C" : "#ddd";
     return "<tr style='border-bottom:1px solid #F5F2EE;'>"+
            "<td style='padding:10px 12px;font-size:11.5px;color:#303030;'>"+q.dom+"</td>"+
            "<td style='padding:10px 12px;text-align:right;'>"+
@@ -516,6 +515,62 @@ function generatePDF() {
 
   var leafB64 = document.getElementById("img-leaf").src;
   var logoB64 = document.getElementById("img-logo").src;
+
+
+  // ── GENERATE ANALYSIS BLOCK ──
+  var strongDomains = [], watchDomains = [], exploreDomains = [];
+  qs.forEach(function(q){
+    var raw = answers[q.id];
+    if (raw === undefined) return;
+    var pts = q.inv ? (raw===3?0:raw===1?1:3) : raw;
+    if (pts >= 3) strongDomains.push(q.dom);
+    else if (pts === 1) watchDomains.push(q.dom);
+    else exploreDomains.push(q.dom);
+  });
+
+  function joinDomains(arr) {
+    if (arr.length === 0) return "";
+    if (arr.length === 1) return "<strong>"+arr[0]+"</strong>";
+    return arr.slice(0,-1).map(function(d){ return "<strong>"+d+"</strong>"; }).join(", ") + " " + (LANG==="FR"?"et":"and") + " <strong>"+arr[arr.length-1]+"</strong>";
+  }
+
+  var analysisHTML = "";
+  if (strongDomains.length > 0) {
+    analysisHTML += "<div style=\'margin-bottom:14px;padding:12px 16px;background:#E8F7F2;border-radius:10px;border-left:3px solid #69BAA5;\'>" +
+      "<div style=\'font-size:10px;font-weight:700;color:#0A6B52;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;font-family:Arial,sans-serif;\'>" +
+        (LANG==="FR" ? "✓ Points forts" : "✓ Strengths") +
+      "</div>" +
+      "<div style=\'font-size:11.5px;color:#303030;line-height:1.7;font-family:Arial,sans-serif;\'>" +
+        (LANG==="FR"
+          ? joinDomains(strongDomains) + " — ces domaines constituent des ressources protectrices importantes pour votre santé sur le long terme."
+          : joinDomains(strongDomains) + " — these areas represent important protective resources for your long-term health.") +
+      "</div>" +
+    "</div>";
+  }
+  if (watchDomains.length > 0) {
+    analysisHTML += "<div style=\'margin-bottom:14px;padding:12px 16px;background:#EEEDF7;border-radius:10px;border-left:3px solid #8176AA;\'>" +
+      "<div style=\'font-size:10px;font-weight:700;color:#3D3470;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;font-family:Arial,sans-serif;\'>" +
+        (LANG==="FR" ? "~ Signaux à observer" : "~ Areas to watch") +
+      "</div>" +
+      "<div style=\'font-size:11.5px;color:#303030;line-height:1.7;font-family:Arial,sans-serif;\'>" +
+        (LANG==="FR"
+          ? joinDomains(watchDomains) + " — des ajustements dans ces domaines peuvent avoir un effet positif sur votre vitalité globale."
+          : joinDomains(watchDomains) + " — adjustments in these areas could have a meaningful positive impact on your overall wellbeing.") +
+      "</div>" +
+    "</div>";
+  }
+  if (exploreDomains.length > 0) {
+    analysisHTML += "<div style=\'margin-bottom:4px;padding:12px 16px;background:#FDF0EC;border-radius:10px;border-left:3px solid #C45A2C;\'>" +
+      "<div style=\'font-size:10px;font-weight:700;color:#7A2E10;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px;font-family:Arial,sans-serif;\'>" +
+        (LANG==="FR" ? "↗ À explorer en priorité" : "↗ Priority areas") +
+      "</div>" +
+      "<div style=\'font-size:11.5px;color:#303030;line-height:1.7;font-family:Arial,sans-serif;\'>" +
+        (LANG==="FR"
+          ? joinDomains(exploreDomains) + " — un regard professionnel sur ces domaines apporterait le plus de valeur pour votre bilan de prévention."
+          : joinDomains(exploreDomains) + " — a professional perspective on these areas would bring the most value for your prevention assessment.") +
+      "</div>" +
+    "</div>";
+  }
 
   var printHTML = 
     "<div id='pc-print' style='width:740px;font-family:Georgia,serif;background:#fff;'>" +
@@ -544,6 +599,14 @@ function generatePDF() {
         (LANG==="FR" ? FR_DISCLAIMER : EN_DISCLAIMER) +
       "</div>" +
     "</div>" +
+
+    // ── ANALYSIS BLOCK ──
+    "<div style='padding:20px 40px;border-bottom:2px solid #F0EDE8;'>"+
+      "<div style='font-size:10px;font-weight:700;color:#303030;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px;font-family:Arial,sans-serif;'>"+
+        (LANG==="FR" ? "Ce que vos réponses révèlent" : "What your answers reveal")+
+      "</div>"+
+      analysisHTML+
+    "</div>"+
 
     // ── TITLE + META ──
     "<div style='padding:28px 40px 20px;border-bottom:2px solid #F0EDE8;'>" +
