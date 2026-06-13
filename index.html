@@ -228,7 +228,7 @@ var T = {
     eSub: "Vos réponses offrent une première image de certains facteurs susceptibles d’influencer votre santé dans le temps.",
     eText: "Comprendre sa santé ne se résume pas à identifier des risques.\nC’est aussi identifier les habitudes, les ressources et les facteurs protecteurs qui permettent de rester en bonne santé, adaptable et résilient.",
     eSpaceTitle: "D’OÙ VIENT CETTE APPROCHE ?",
-    eSpaceText: "Dans l’espace, la santé ne peut pas attendre l’apparition des symptômes.\nLes astronautes n’attendent pas d’être malades pour protéger leur santé. Pourquoi le ferions-nous ?\nIls évoluent dans des environnements où la prévention, l’anticipation et la surveillance continue sont essentielles. La médecine spatiale est préventive par nature.\nChez PrévenirCare, nous nous inspirons de cette philosophie.\nNous explorons comment les déterminants de santé, les capacités d’adaptation et les facteurs protecteurs interagissent, bien avant que la maladie n’apparaisse.\nParce qu’il est plus facile de construire la santé que de la reconstruire.",
+    eSpaceText: "Dans l’espace, la santé ne peut pas attendre l’apparition des symptômes. Les astronautes n’attendent pas d’être malades pour protéger leur santé.\n\nIls évoluent dans des environnements où la prévention, l’anticipation et la surveillance continue sont essentielles. La médecine spatiale est préventive par nature.\nPourquoi la population générale ne fait-elle pas de même ?\n\nChez PrévenirCare, nous nous inspirons de cette philosophie. Nous explorons comment les déterminants de santé, les capacités d’adaptation et les facteurs protecteurs interagissent, bien avant que la maladie n’apparaisse. Parce qu’il est plus facile de construire la santé que de la reconstruire.",
     eCta: "Découvrir l’expérience PrévenirCare complète",
     ePdf: "Télécharger mon bilan santé (PDF)",
     pdfDocTitle: "Boussole santé",
@@ -450,7 +450,7 @@ function submitForm() {
   fetch("https://api.airtable.com/v0/appRusV4qJw9fxGKF/Leads_Boussole", {
     method: "POST",
     headers: {
-      "Authorization": "Bearer patpuIE5rSr7bUnhp.ec413fa5fb90b91b9bf3bf1e88a4bcb764cf1ac869f65c9d6a8144fc97bd1552",
+      "Authorization": "Bearer patkTk2DXRN7UkT5l.1cf56b83a156d8842e7af546500818113c657520c935bc67f9b6941a88cd86ac",
       "Content-Type": "application/json"
     },
     body: JSON.stringify({fields: fields, typecast: true})
@@ -478,6 +478,12 @@ function showExitScreen() {
   document.getElementById("ePdf").textContent = t.ePdf;
   showScreen("sc-exit");
 }
+
+var FR_DISCLAIMER = "Cette évaluation constitue un point de départ. Son objectif n’est pas de fournir une analyse complète de votre santé, mais de vous aider à découvrir certains des facteurs, schémas et ressources susceptibles d’influencer votre état de santé au fil du temps. Une évaluation plus fiable nécessite une exploration plus approfondie de votre mode de vie, de votre environnement et de votre histoire de santé. Si cette expérience vous a permis de porter un regard nouveau sur votre santé, nous serions ravis de vous accompagner pour aller plus loin.";
+var EN_DISCLAIMER = "This assessment is only a starting point. Its purpose is not to provide a complete health analysis, but to help you discover some of the drivers, patterns and health assets that may influence your wellbeing over time. A more reliable assessment requires a deeper exploration of your lifestyle, environment and health history. If this experience has given you a new perspective on your health, we would be delighted to accompany you further.";
+
+var FR_SCIENCE = "La plupart des gens pensent leur santé facteur par facteur.\nSommeil. Nutrition. Activité physique. Stress. Respiration. Digestion. Environnement.\n\nMais la santé ne fonctionne pas ainsi.\n\nCes facteurs interagissent en permanence. Ils se renforcent, se compensent, ou amplifièrent leurs effets respectifs.\n\nEnsemble, ils révèlent des schémas, des points forts et des vulnérabilités souvent invisibles lorsqu’on les observe isolément.\n\nEn médecine aérospatiale, la santé ne se réduit pas à un symptôme ou une mesure isolée. Ce qui compte, c’est l’équilibre global du système : sa capacité à s’adapter et rester robuste.\n\nL’épigénétique et le DOHaD rappellent que la santé n’est pas un état figé. C’est une trajectoire.\n\nChez PrévenirCare, comprendre la santé, c’est comprendre cette trajectoire avant que la maladie n’apparaisse.\n\nParce que l’avenir de la santé commence bien avant le premier symptôme.";
+var EN_SCIENCE = "Most people think about health one factor at a time.\nSleep. Nutrition. Physical activity. Stress. Breathing. Digestion. Environment.\n\nBut health doesn’t work that way.\n\nThese factors interact continuously. Taken together, they reveal patterns, strengths and vulnerabilities that remain invisible when viewed in isolation.\n\nIn aerospace medicine, health cannot be reduced to a symptom or a single measurement. What matters is the overall balance of the system: its capacity to adapt, recover and remain robust over time.\n\nEpigenetics and DOHaD remind us that health is not a fixed state. It is a trajectory.\n\nAt PrévenirCare, we believe that understanding health means understanding this trajectory before disease appears.\n\nBecause the future of health begins long before the first symptom.";
 
 function generatePDF() {
   var t = T[LANG];
@@ -512,6 +518,11 @@ function generatePDF() {
         "<div style='font-size:11px;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.04em;'>"+(LANG==="FR"?"Votre boussole santé personnelle":"Your personal health compass")+"</div>"+
       "</div>"+
     "</div>"+
+    "<div style='padding:16px 36px;background:#F7F4FF;border-left:4px solid #8176AA;'>"+
+      "<div style='font-size:11px;color:#555;line-height:1.7;font-style:italic;'>"+
+        (LANG==="FR" ? FR_DISCLAIMER : EN_DISCLAIMER)+
+      "</div>"+
+    "</div>"+
     "<div style='padding:28px 36px 20px;border-bottom:1px solid #F0EDE8;'>"+
       "<div style='font-size:13px;color:#888;margin-bottom:6px;'>"+today+(userName?" · "+userName:"")+" · "+ageLabel+"</div>"+
       "<div style='font-size:24px;font-weight:700;color:#303030;font-family:Georgia,serif;margin-bottom:8px;'>"+t.pdfDocTitle+"</div>"+
@@ -528,6 +539,14 @@ function generatePDF() {
     "<div style='padding:24px 36px;'>"+
       "<div style='font-size:11px;font-weight:700;color:#8176AA;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;'>"+(LANG==="FR"?"Vos réponses par domaine":"Your answers by domain")+"</div>"+
       "<table style='width:100%;border-collapse:collapse;'>"+domainRows+"</table>"+
+    "</div>"+
+    "<div style='padding:24px 36px;border-bottom:1px solid #F0EDE8;'>"+
+      "<div style='font-size:10px;font-weight:700;color:#8176AA;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px;'>"+
+        (LANG==="FR" ? "D'O\u00d9 VIENT CETTE APPROCHE ?" : "OUR SCIENTIFIC PERSPECTIVE")+
+      "</div>"+
+      "<div style='font-size:11px;color:#555;line-height:1.8;'>"+
+        (LANG==="FR" ? FR_SCIENCE : EN_SCIENCE).split("\n").map(function(p){ return p.trim() ? "<p style='margin-bottom:5px;'>"+p+"</p>" : "<br>"; }).join("")+
+      "</div>"+
     "</div>"+
     "<div style='padding:20px 36px;background:#69BAA5;border-radius:0 0 12px 12px;display:flex;justify-content:space-between;align-items:center;'>"+
       "<div style='display:flex;align-items:center;gap:8px;'>"+
