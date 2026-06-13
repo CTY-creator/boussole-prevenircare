@@ -503,63 +503,106 @@ function generatePDF() {
     var raw = answers[q.id];
     var display = raw !== undefined ? ansMap[raw] : "-";
     var pts = q.inv ? (raw===3?0:raw===1?1:3) : raw;
-    var dc = pts >= 3 ? "#69BAA5" : pts >= 1 ? "#8176AA" : "#C45A2C";
-    return "<tr><td style='padding:7px 10px;font-size:11px;color:#303030;border-bottom:1px solid #F0EDE8;'>"+q.dom+"</td>"+
-           "<td style='padding:7px 10px;font-size:11px;text-align:right;border-bottom:1px solid #F0EDE8;'><span style='background:"+dc+"20;color:"+dc+";border-radius:20px;padding:2px 10px;font-weight:600;'>"+display+"</span></td></tr>";
-  }).join("");
+    var bg = pts >= 3 ? "#E8F7F2" : pts >= 1 ? "#EEEDF7" : "#FDF0EC";
+    var fc = pts >= 3 ? "#0A6B52" : pts >= 1 ? "#3D3470" : "#7A2E10";
+    var bc = pts >= 3 ? "#69BAA5" : pts >= 1 ? "#8176AA" : "#C45A2C";
+    return "<tr style='border-bottom:1px solid #F5F2EE;'>"+
+           "<td style='padding:10px 12px;font-size:11.5px;color:#303030;'>"+q.dom+"</td>"+
+           "<td style='padding:10px 12px;text-align:right;'>"+
+             "<span style='background:"+bg+";color:"+fc+";border:1px solid "+bc+"20;border-radius:20px;padding:3px 12px;font-weight:600;font-size:10.5px;'>"+display+"</span>"+
+           "</td></tr>";
+  }).join("");;
 
   var leafB64 = document.getElementById("img-leaf").src;
   var logoB64 = document.getElementById("img-logo").src;
 
-  var printHTML = "<div id='pc-print' style='width:680px;font-family:Georgia,serif;background:#fff;padding:0;'>"+
-    "<div style='background:#69BAA5;padding:24px 36px;border-radius:12px 12px 0 0;'>"+
-      "<div style='display:flex;align-items:center;gap:16px;'>"+
-        "<img src='"+logoB64+"' style='width:64px;filter:brightness(0) invert(1);'>"+
-        "<div style='font-size:11px;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:0.04em;'>"+(LANG==="FR"?"Votre boussole santé personnelle":"Your personal health compass")+"</div>"+
-      "</div>"+
-    "</div>"+
-    "<div style='padding:16px 36px;background:#F7F4FF;border-left:4px solid #8176AA;'>"+
-      "<div style='font-size:11px;color:#555;line-height:1.7;font-style:italic;'>"+
-        (LANG==="FR" ? FR_DISCLAIMER : EN_DISCLAIMER)+
-      "</div>"+
-    "</div>"+
-    "<div style='padding:28px 36px 20px;border-bottom:1px solid #F0EDE8;'>"+
-      "<div style='font-size:13px;color:#888;margin-bottom:6px;'>"+today+(userName?" · "+userName:"")+" · "+ageLabel+"</div>"+
-      "<div style='font-size:24px;font-weight:700;color:#303030;font-family:Georgia,serif;margin-bottom:8px;'>"+t.pdfDocTitle+"</div>"+
-      "<div style='font-size:13px;color:#666;line-height:1.6;'>"+t.pdfDocDesc+"</div>"+
-    "</div>"+
-    "<div style='padding:24px 36px;background:#FAFAF8;border-bottom:1px solid #F0EDE8;'>"+
-      "<div style='font-size:12px;color:#888;margin-bottom:4px;'>"+(LANG==="FR"?"Votre score":"Your score")+"</div>"+
-      "<div style='font-size:36px;font-weight:700;color:"+color+";font-family:Georgia,serif;margin-bottom:6px;'>"+norm.toFixed(1)+"<span style='font-size:18px;color:#aaa;font-weight:400;'> / 40</span></div>"+
-      "<div style='background:#F0EDE8;border-radius:6px;height:10px;overflow:hidden;margin-bottom:12px;'>"+
-        "<div style='width:"+pct+"%;height:100%;background:"+color+";border-radius:6px;'></div>"+
-      "</div>"+
-      "<div style='font-size:17px;font-weight:700;color:#303030;margin-bottom:4px;'>"+userProfile+"</div>"+
-    "</div>"+
-    "<div style='padding:24px 36px;'>"+
-      "<div style='font-size:11px;font-weight:700;color:#8176AA;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:12px;'>"+(LANG==="FR"?"Vos réponses par domaine":"Your answers by domain")+"</div>"+
-      "<table style='width:100%;border-collapse:collapse;'>"+domainRows+"</table>"+
-    "</div>"+
-    "<div style='padding:24px 36px;border-bottom:1px solid #F0EDE8;'>"+
-      "<div style='font-size:10px;font-weight:700;color:#8176AA;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px;'>"+
-        (LANG==="FR" ? "D'O\u00d9 VIENT CETTE APPROCHE ?" : "OUR SCIENTIFIC PERSPECTIVE")+
-      "</div>"+
-      "<div style='font-size:11px;color:#555;line-height:1.8;'>"+
-        (LANG==="FR" ? FR_SCIENCE : EN_SCIENCE).split("\n").map(function(p){ return p.trim() ? "<p style='margin-bottom:5px;'>"+p+"</p>" : "<br>"; }).join("")+
-      "</div>"+
-    "</div>"+
-    "<div style='padding:20px 36px;background:#69BAA5;border-radius:0 0 12px 12px;display:flex;justify-content:space-between;align-items:center;'>"+
-      "<div style='display:flex;align-items:center;gap:8px;'>"+
-        "<img src='"+leafB64+"' style='width:16px;filter:brightness(0) invert(1);opacity:0.9;'>"+
-        "<span style='font-size:11px;color:rgba(255,255,255,0.85);'>prevenir.care</span>"+
-      "</div>"+
-      "<div style='font-size:11px;font-weight:600;color:#fff;'>Prédire et prévenir la santé par le mode de vie</div>"+
-    "</div>"+
-  "</div>";
+  var printHTML = 
+    "<div id='pc-print' style='width:740px;font-family:Georgia,serif;background:#fff;'>" +
 
-  var el = document.createElement("div");
-  el.style.cssText = "position:fixed;left:-9999px;top:0;";
-  el.innerHTML = printHTML;
+    // ── HEADER ──
+    "<div style='background:#69BAA5;padding:28px 40px 24px;'>" +
+      "<div style='display:flex;align-items:center;justify-content:space-between;'>" +
+        "<div style='display:flex;align-items:center;gap:14px;'>" +
+          "<img src='"+document.getElementById("img-logo").src+"' style='width:72px;filter:brightness(0) invert(1);'>" +
+          "<div>" +
+            "<div style='font-size:10px;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.1em;font-family:Arial,sans-serif;'>"+
+              (LANG==="FR" ? "Votre boussole santé personnelle" : "Your personal health compass")+
+            "</div>" +
+          "</div>" +
+        "</div>" +
+        "<div style='text-align:right;'>" +
+          "<div style='font-size:11px;color:rgba(255,255,255,0.75);font-family:Arial,sans-serif;'>" + today + "</div>" +
+          "<div style='font-size:11px;color:#fff;font-weight:bold;font-family:Arial,sans-serif;margin-top:2px;'>" + (userName || "") + "</div>" +
+        "</div>" +
+      "</div>" +
+    "</div>" +
+
+    // ── DISCLAIMER ──
+    "<div style='padding:18px 40px;background:#F0EEF8;border-left:4px solid #8176AA;margin:0;'>" +
+      "<div style='font-size:10.5px;color:#4A4070;line-height:1.75;font-style:italic;font-family:Arial,sans-serif;'>" +
+        (LANG==="FR" ? FR_DISCLAIMER : EN_DISCLAIMER) +
+      "</div>" +
+    "</div>" +
+
+    // ── TITLE + META ──
+    "<div style='padding:28px 40px 20px;border-bottom:2px solid #F0EDE8;'>" +
+      "<div style='font-size:11px;color:#aaa;margin-bottom:8px;font-family:Arial,sans-serif;letter-spacing:0.03em;'>" + ageLabel + "</div>" +
+      "<div style='font-size:28px;font-weight:700;color:#303030;margin-bottom:8px;font-family:Georgia,serif;'>" + t.pdfDocTitle + "</div>" +
+      "<div style='font-size:12px;color:#777;line-height:1.65;font-family:Arial,sans-serif;'>" + t.pdfDocDesc + "</div>" +
+    "</div>" +
+
+    // ── SCORE ──
+    "<div style='padding:28px 40px;background:#FAFAF8;border-bottom:2px solid #F0EDE8;display:flex;align-items:center;gap:32px;'>" +
+      "<div style='flex:1;'>" +
+        "<div style='font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:10px;font-family:Arial,sans-serif;'>" +
+          (LANG==="FR" ? "Votre score" : "Your score") +
+        "</div>" +
+        "<div style='font-size:52px;font-weight:700;color:"+color+";font-family:Georgia,serif;line-height:1;margin-bottom:12px;'>" +
+          norm.toFixed(1) + "<span style='font-size:20px;color:#ccc;font-weight:400;'> / 40</span>" +
+        "</div>" +
+        "<div style='background:#EEEBE6;border-radius:8px;height:10px;overflow:hidden;margin-bottom:14px;'>" +
+          "<div style='width:"+pct+"%;height:100%;background:"+color+";border-radius:8px;'></div>" +
+        "</div>" +
+        "<div style='font-size:18px;font-weight:700;color:#303030;font-family:Georgia,serif;'>" + userProfile + "</div>" +
+      "</div>" +
+      "<div style='width:1px;background:#E8E5E0;align-self:stretch;'></div>" +
+      "<div style='width:160px;text-align:center;'>" +
+        "<img src='"+document.getElementById("img-leaf").src+"' style='width:64px;opacity:0.6;'>" +
+        "<div style='font-size:9px;color:#aaa;margin-top:8px;font-family:Arial,sans-serif;text-transform:uppercase;letter-spacing:0.08em;'>PrévenirCare</div>" +
+      "</div>" +
+    "</div>" +
+
+    // ── DOMAIN TABLE ──
+    "<div style='padding:28px 40px;border-bottom:2px solid #F0EDE8;'>" +
+      "<div style='font-size:10px;font-weight:700;color:#8176AA;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;font-family:Arial,sans-serif;'>" +
+        (LANG==="FR" ? "Vos réponses par domaine" : "Your answers by domain") +
+      "</div>" +
+      "<table style='width:100%;border-collapse:collapse;font-family:Arial,sans-serif;'>" +
+        domainRows +
+      "</table>" +
+    "</div>" +
+
+    // ── SCIENCE TEXT ──
+    "<div style='padding:28px 40px;border-bottom:2px solid #F0EDE8;background:#FDFCFF;'>" +
+      "<div style='font-size:10px;font-weight:700;color:#8176AA;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;font-family:Arial,sans-serif;'>" +
+        (LANG==="FR" ? "D'O\u00d9 VIENT CETTE APPROCHE ?" : "OUR SCIENTIFIC PERSPECTIVE") +
+      "</div>" +
+      (LANG==="FR" ? FR_SCIENCE : EN_SCIENCE).split("\n").map(function(p){ 
+        return p.trim() ? "<p style='font-size:11.5px;color:#444;line-height:1.85;margin-bottom:10px;font-family:Arial,sans-serif;'>"+p+"</p>" : "<div style='height:4px;'></div>"; 
+      }).join("") +
+    "</div>" +
+
+    // ── FOOTER ──
+    "<div style='padding:18px 40px;background:#69BAA5;display:flex;justify-content:space-between;align-items:center;'>" +
+      "<div style='display:flex;align-items:center;gap:8px;'>" +
+        "<img src='"+document.getElementById("img-leaf").src+"' style='width:18px;filter:brightness(0) invert(1);opacity:0.9;'>" +
+        "<span style='font-size:11px;color:rgba(255,255,255,0.85);font-family:Arial,sans-serif;'>prevenir.care</span>" +
+      "</div>" +
+      "<div style='font-size:10px;font-weight:600;color:#fff;font-family:Arial,sans-serif;letter-spacing:0.02em;'>Prédire et prévenir la santé par le mode de vie</div>" +
+    "</div>" +
+
+    "</div>";
+
   document.body.appendChild(el);
 
   html2canvas(el.querySelector("#pc-print"), {scale:3, useCORS:true, backgroundColor:"#ffffff", logging:false})
