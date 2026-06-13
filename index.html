@@ -445,7 +445,7 @@ function submitForm() {
     "Source": "Boussole VivaTech — " + ageLabel,
     "Date": new Date().toISOString().split("T")[0]
   };
-  if (tel) fields["Telephone"] = tel;
+  if (tel) fields["T\u00e9l\u00e9phone"] = tel;
 
   fetch("https://api.airtable.com/v0/appRusV4qJw9fxGKF/Leads_Boussole", {
     method: "POST",
