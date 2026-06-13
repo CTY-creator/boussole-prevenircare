@@ -603,6 +603,9 @@ function generatePDF() {
 
     "</div>";
 
+  var el = document.createElement("div");
+  el.style.cssText = "position:fixed;left:-9999px;top:0;";
+  el.innerHTML = printHTML;
   document.body.appendChild(el);
 
   html2canvas(el.querySelector("#pc-print"), {scale:3, useCORS:true, backgroundColor:"#ffffff", logging:false})
